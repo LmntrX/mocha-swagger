@@ -1,3 +1,38 @@
+#!/usr/bin/env node
+
+/**
+ * Copyright (c) 2018-present, Lmntrx Tech.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//   /!\ DO NOT MODIFY THIS FILE /!\
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// mochaswagger-gen is installed globally on people's computers. This means
+// that it is extremely difficult to have them upgrade the version and
+// because there's only one global version installed, it is very prone to
+// breaking changes.
+//
+// If you need to add a new command, please add it to the scripts/ folder.
+//
+// The only reason to modify this file is to add more warnings and
+// troubleshooting information for the `mochaswagger-gen` command.
+//
+// Do not make breaking changes! We absolutely don't want to have to
+// tell people to update their global version of mochaswagger-gen.
+//
+// Also be careful with new language features.
+// This file must work on Node 0.10+.
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//   /!\ DO NOT MODIFY THIS FILE /!\
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"use strict";
+
 const path = require("path");
 const glob = require("glob");
 const chalk = require("chalk");
@@ -7,28 +42,21 @@ module.exports = dir => {
   const testDirName = path.basename(root);
   const testFileFormat = "/**/*.js";
   let routes = [];
-  glob(`${testDirName}/${testFileFormat}`, null, function(er, files) {
-    if (er) {
-      console.log();
-      console.error(chalk.red(er));
-      return;
-    }
-    if (!files || files.length <= 0) {
-      console.log();
-      console.error(
-        chalk.red(`${testDirName} directory does not exist or is empty.`)
-      );
-      console.log();
-      console.info(
-        chalk.blue(`Please verify that your test files follow this format:`),
-        chalk.yellow(testFileFormat)
-      );
-      return;
-    }
-    files.forEach(file => {
-      processFile(fs.readFileSync(file).toString());
-    });
-    console.log(routes);
+  let files = glob.sync(`${testDirName}/${testFileFormat}`);
+  if (!files || files.length <= 0) {
+    console.log();
+    console.error(
+      chalk.red(`${testDirName} directory does not exist or is empty.`)
+    );
+    console.log();
+    console.info(
+      chalk.blue(`Please verify that your test files follow this format:`),
+      chalk.yellow(testFileFormat)
+    );
+    return null;
+  }
+  files.forEach(file => {
+    processFile(fs.readFileSync(file).toString());
   });
 
   function processFile(data) {
@@ -91,4 +119,6 @@ module.exports = dir => {
       }
     });
   }
+
+  return routes;
 };

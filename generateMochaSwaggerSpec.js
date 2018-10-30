@@ -35,11 +35,10 @@
 
 const chalk = require("chalk");
 const commander = require("commander");
-const spawn = require("cross-spawn");
-const os = require("os");
+const fs = require("fs");
 const envinfo = require("envinfo");
 const packageJson = require("./package.json");
-const validateTestDirectory = require("./ValidateTestDirectory");
+const parseTestDirectory = require("./parseTestDirectory");
 
 let testDir;
 
@@ -103,4 +102,41 @@ if (typeof testDir === "undefined") {
   process.exit(1);
 }
 
-validateTestDirectory(testDir);
+let routes = parseTestDirectory(testDir);
+let swagger = {
+  info: {
+    title: packageJson.name,
+    version: packageJson.version,
+    description: packageJson.description,
+    contact: {
+      name: packageJson.author
+    },
+    license: {
+      name: packageJson.license
+    }
+  },
+  swagger: "2.0",
+  paths: {}
+};
+routes.forEach(route => {
+  if (!swagger.paths[route.path]) swagger.paths[route.path] = {};
+  swagger.paths[route.path][route.method] = {
+    summary: "",
+    description: "",
+    responses: {
+      "200": {
+        description: ""
+      }
+    }
+  };
+});
+fs.writeFile("./swagger.json", JSON.stringify(swagger), function(err) {
+  if (err) {
+    return console.error(err);
+  }
+
+  console.log(
+    chalk.green("The file was saved! Filename:"),
+    chalk.yellow("swagger.json")
+  );
+});
