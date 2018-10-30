@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "mocha-swagger": "./index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LmntrX/mocha-swagger.git"
@@ -27,5 +30,12 @@
   "bugs": {
     "url": "https://github.com/LmntrX/mocha-swagger/issues"
   },
-  "homepage": "https://github.com/LmntrX/mocha-swagger#readme"
+  "homepage": "https://github.com/LmntrX/mocha-swagger#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.18.0",
+    "cross-spawn": "^6.0.5",
+    "envinfo": "^5.10.0",
+    "glob": "^7.1.3"
+  }
 }
