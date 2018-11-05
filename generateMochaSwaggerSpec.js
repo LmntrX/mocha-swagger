@@ -123,6 +123,7 @@ routes.forEach(route => {
   swagger.paths[route.path][route.method] = {
     summary: "",
     description: "",
+    parameters: route.parameters,
     responses: {
       "200": {
         description: ""

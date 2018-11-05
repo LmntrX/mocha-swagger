@@ -40,23 +40,25 @@ const fs = require("fs");
 module.exports = dir => {
   const root = path.resolve(dir);
   const testDirName = path.basename(root);
-  const testFileFormat = "/**/*.js";
+  //const testFileFormat = "/**/*.js";
+  const testFileFormats = ["/**/*.js", "/**/*.ts"];
   let routes = [];
-  let files = glob.sync(`${testDirName}/${testFileFormat}`);
-  if (!files || files.length <= 0) {
-    console.log();
-    console.error(
-      chalk.red(`${testDirName} directory does not exist or is empty.`)
-    );
-    console.log();
+  testFileFormats.forEach(testFileFormat => {
+    let files = glob.sync(`${testDirName}/${testFileFormat}`);
+    if (!files || files.length <= 0) {
+      console.warn(
+        chalk.magenta(
+          `${testDirName} directory does contain files matching pattern ${testFileFormat}`
+        )
+      );
+      return null;
+    }
     console.info(
-      chalk.blue(`Please verify that your test files follow this format:`),
-      chalk.yellow(testFileFormat)
+      chalk.cyan(`Parsing files matching pattern ${testFileFormat}`)
     );
-    return null;
-  }
-  files.forEach(file => {
-    processFile(fs.readFileSync(file).toString());
+    files.forEach(file => {
+      processFile(fs.readFileSync(file).toString());
+    });
   });
 
   function processFile(data) {
@@ -64,29 +66,57 @@ module.exports = dir => {
     blocks.forEach(block => {
       let lines = block.split(".");
       let route = null;
-      lines.forEach(line => {
+      lines.forEach((line, index) => {
         let method = null;
-        if (line.includes("get")) {
+        if (line.includes("`") && !line.includes("$")) {
+          line = line.replace(/`/g, '"').trim();
+        }
+        if (line.includes("+")) {
+          line =
+            line.substring(0, line.indexOf('" +')) +
+            ":" +
+            lines[index + 1].substring(0, lines[index + 1].indexOf(")")) +
+            '")';
+        }
+        if (line.includes("`") && line.includes("$")) {
+          method = null;
+        } else if (line.startsWith("get")) {
           method = "get";
-        } else if (line.includes("post")) {
+        } else if (line.startsWith("post")) {
           method = "post";
-        } else if (line.includes("delete")) {
+        } else if (line.startsWith("delete")) {
           method = "delete";
-        } else if (line.includes("put")) {
+        } else if (line.startsWith("put")) {
           method = "put";
-        } else if (line.includes("patch")) {
+        } else if (line.startsWith("patch")) {
           method = "patch";
         }
         if (method) {
+          let parameters = [];
+          console.log(line.trim());
           let path = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
           path = path.replace(/"/g, "");
+          if (path.includes(":")) {
+            path = path.replace(/:/g, "{");
+            path = path.replace(/{\//g, "}");
+            path = path + "}";
+            parameters = [
+              {
+                in: "path",
+                required: true,
+                name: path.substring(path.indexOf("{") + 1, path.indexOf("}"))
+              }
+            ];
+          }
           if (route) {
             route.method = method;
             route.path = path;
+            route.parameters = parameters;
           } else
             route = {
-              method: method,
-              path
+              method,
+              path,
+              parameters
             };
         }
       });
