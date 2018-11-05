@@ -1,6 +1,6 @@
 {
   "name": "mocha-swagger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate swagger spec from mocha tests",
   "main": "index.js",
   "scripts": {
