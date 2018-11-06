@@ -14,6 +14,8 @@ mocha-swagger path/to/project/tests
 
 ## Change Log
 
+- 1.0.3
+  - Fixed incorrect project information generated issue
 - 1.0.2
   - Support for typescript files
   - Parses path parameters
