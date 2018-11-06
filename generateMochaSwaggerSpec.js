@@ -39,6 +39,28 @@ const fs = require("fs");
 const envinfo = require("envinfo");
 const packageJson = require("./package.json");
 const parseTestDirectory = require("./parseTestDirectory");
+let userPackageJson = null;
+try {
+  userPackageJson = JSON.parse(fs.readFileSync("package.json").toString());
+  console.log(chalk.cyan("Auto filling project information."));
+  console.log(
+    chalk.green("Project Title:"),
+    chalk.yellow(userPackageJson.name)
+  );
+  console.log(chalk.green("Version:"), chalk.yellow(userPackageJson.version));
+  console.log(
+    chalk.green("Description:"),
+    chalk.yellow(userPackageJson.description)
+  );
+  console.log(chalk.green("Author:"), chalk.yellow(userPackageJson.author));
+  console.log(chalk.green("License:"), chalk.yellow(userPackageJson.license));
+} catch (error) {
+  console.log(
+    chalk.magenta(
+      "Couldn't locate package.json file in this directory. Project information will be left empty in the generated spec."
+    )
+  );
+}
 
 let testDir;
 
@@ -105,14 +127,14 @@ if (typeof testDir === "undefined") {
 let routes = parseTestDirectory(testDir);
 let swagger = {
   info: {
-    title: packageJson.name,
-    version: packageJson.version,
-    description: packageJson.description,
+    title: userPackageJson ? userPackageJson.name : "",
+    version: userPackageJson ? userPackageJson.version : "",
+    description: userPackageJson ? userPackageJson.description : "",
     contact: {
-      name: packageJson.author
+      name: userPackageJson ? userPackageJson.author : ""
     },
     license: {
-      name: packageJson.license
+      name: userPackageJson ? userPackageJson.license : ""
     }
   },
   swagger: "2.0",
@@ -137,7 +159,9 @@ fs.writeFile("./swagger.json", JSON.stringify(swagger), function(err) {
   }
 
   console.log(
-    chalk.green("The file was saved! Filename:"),
+    chalk.green(
+      "Swagger specification for your project was generated successfully! Filename:"
+    ),
     chalk.yellow("swagger.json")
   );
 });

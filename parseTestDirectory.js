@@ -40,7 +40,6 @@ const fs = require("fs");
 module.exports = dir => {
   const root = path.resolve(dir);
   const testDirName = path.basename(root);
-  //const testFileFormat = "/**/*.js";
   const testFileFormats = ["/**/*.js", "/**/*.ts"];
   let routes = [];
   testFileFormats.forEach(testFileFormat => {
