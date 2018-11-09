@@ -14,6 +14,9 @@ mocha-swagger path/to/project/tests
 
 ## Change Log
 
+- 1.0.4
+  - Fixed parameter not parsed in some cases issue
+  - Fixed Insomnia import failing issues
 - 1.0.3
   - Fixed incorrect project information generated issue
 - 1.0.2
