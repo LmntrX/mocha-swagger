@@ -47,7 +47,7 @@ module.exports = dir => {
     if (!files || files.length <= 0) {
       console.warn(
         chalk.magenta(
-          `${testDirName} directory does contain files matching pattern ${testFileFormat}`
+          `${testDirName} directory does not contain files matching pattern ${testFileFormat}`
         )
       );
       return null;
@@ -74,7 +74,9 @@ module.exports = dir => {
           line =
             line.substring(0, line.indexOf('" +')) +
             ":" +
-            lines[index + 1].substring(0, lines[index + 1].indexOf(")")) +
+            (lines[index + 1].includes("(")
+              ? line.substring(line.indexOf('" +') + 3, line.length).trim()
+              : lines[index + 1].substring(0, lines[index + 1].indexOf(")"))) +
             '")';
         }
         if (line.includes("`") && line.includes("$")) {
@@ -103,6 +105,7 @@ module.exports = dir => {
               {
                 in: "path",
                 required: true,
+                type: "string",
                 name: path.substring(path.indexOf("{") + 1, path.indexOf("}"))
               }
             ];

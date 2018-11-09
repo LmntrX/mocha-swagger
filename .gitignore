@@ -63,3 +63,4 @@ typings/
 # others
 demotest/
 swagger.json
+package-lock.json
