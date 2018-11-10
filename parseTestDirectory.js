@@ -37,6 +37,7 @@ const path = require("path");
 const glob = require("glob");
 const chalk = require("chalk");
 const fs = require("fs");
+const ProgressBar = require("progress");
 module.exports = dir => {
   const root = path.resolve(dir);
   const testDirName = path.basename(root);
@@ -55,8 +56,15 @@ module.exports = dir => {
     console.info(
       chalk.cyan(`Parsing files matching pattern ${testFileFormat}`)
     );
+    var bar = new ProgressBar("  processing [:bar] :percent :etas", {
+      complete: "=",
+      incomplete: " ",
+      total: files.length * 2,
+      renderThrottle: 0
+    });
     files.forEach(file => {
       processFile(fs.readFileSync(file).toString());
+      bar.tick(2);
     });
   });
 
@@ -94,7 +102,6 @@ module.exports = dir => {
         }
         if (method) {
           let parameters = [];
-          console.log(line.trim());
           let path = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
           path = path.replace(/"/g, "");
           if (path.includes(":")) {

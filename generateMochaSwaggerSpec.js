@@ -33,9 +33,12 @@
 
 "use strict";
 
+let startTime = Date.now();
+
 const chalk = require("chalk");
 const commander = require("commander");
 const fs = require("fs");
+const path = require("path");
 const envinfo = require("envinfo");
 const packageJson = require("./package.json");
 const parseTestDirectory = require("./parseTestDirectory");
@@ -160,8 +163,14 @@ fs.writeFile("./swagger.json", JSON.stringify(swagger), function(err) {
 
   console.log(
     chalk.green(
-      "Swagger specification for your project was generated successfully! Filename:"
+      "Swagger specification for your project was generated successfully! \nFilename:"
     ),
-    chalk.yellow("swagger.json")
+    chalk.yellow.underline.italic.bold(`${path.resolve(testDir)}/swagger.json`)
+  );
+
+  let endTime = Date.now();
+  let diff = (endTime - startTime) / 1000;
+  console.log(
+    chalk.cyanBright(`Task completed in ${chalk.bold(diff)} seconds.`)
   );
 });
